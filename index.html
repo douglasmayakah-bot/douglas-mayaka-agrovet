@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Douglas Mayaka Agrovet</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial;background:#f1f5f1;margin:0;padding:20px;color:#183b28}
+.container{max-width:500px;margin:40px auto;background:white;padding:25px;border-radius:15px;box-shadow:0 3px 15px #ccc}
+h2{color:#176b3a;text-align:center}
+input,button{width:100%;padding:13px;margin:9px 0;box-sizing:border-box;border-radius:7px}
+input{border:1px solid #bbb}
+button{background:#176b3a;color:white;border:0;font-size:16px}
+button.secondary{background:#555}
+#dashboard{display:none}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#e7f3e9;padding:17px;border-radius:10px;text-align:center}
+small{color:#666}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Douglas Mayaka Agrovet</h2>
+<p style="text-align:center">Agrovet Management System</p>
+
+<div id="login">
+<h3>Login to your account</h3>
+<input id="email" type="email" placeholder="Email address">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button class="secondary" onclick="signup()">Create Account</button>
+<p id="message"></p>
+</div>
+
+<div id="dashboard">
+<h3>Welcome to your dashboard</h3>
+<div class="cards">
+<div class="card">Sales<br><strong>KES 0</strong></div>
+<div class="card">Expenses<br><strong>KES 0</strong></div>
+<div class="card">Profit<br><strong>KES 0</strong></div>
+<div class="card">Products<br><strong>0</strong></div>
+</div>
+<p>Welcome! Your agrovet system is being set up.</p>
+<button class="secondary" onclick="logout()">Logout</button>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = "zgffptpqmpmtpswmpwxo";
+const SUPABASE_KEY = "eu-west-1";
+
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+async function login(){
+const {error}=await db.auth.signInWithPassword({
+email:document.getElementById("email").value,
+password:document.getElementById("password").value
+});
+if(error){document.getElementById("message").textContent=error.message;}
+else{showDashboard();}
+}
+
+async function signup(){
+const {error}=await db.auth.signUp({
+email:document.getElementById("email").value,
+password:document.getElementById("password").value
+});
+document.getElementById("message").textContent=
+error ? error.message : "Account created. Check your email if confirmation is required.";
+}
+
+async function logout(){
+await db.auth.signOut();
+document.getElementById("dashboard").style.display="none";
+document.getElementById("login").style.display="block";
+}
+
+function showDashboard(){
+document.getElementById("login").style.display="none";
+document.getElementById("dashboard").style.display="block";
+}
+
+db.auth.getSession().then(({data})=>{
+if(data.session) showDashboard();
+});
+</script>
+</body>
+</html>
